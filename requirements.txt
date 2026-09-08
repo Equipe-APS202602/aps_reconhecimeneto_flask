@@ -1,0 +1,6 @@
+Flask
+opencv-contrib-python
+mysql-connector-python
+python-dotenv
+Flask-Login
+bcrypt

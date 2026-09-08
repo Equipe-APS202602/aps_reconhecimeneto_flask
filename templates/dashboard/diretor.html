@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | Diretor
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid dashboard">
+
+    <div class="mb-4">
+
+        <h2>
+            <i class="bi bi-speedometer2"></i>
+            Dashboard
+        </h2>
+
+        <p class="text-secondary">
+            Área administrativa de segurança.
+        </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-database-lock"></i>
+
+                <div>
+
+                    <small>Registros disponíveis</small>
+
+                    <h3>{{ total_registros }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-shield-check"></i>
+
+                <div>
+
+                    <small>Acessos hoje</small>
+
+                    <h3>{{ acessos_hoje }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-clock-history"></i>
+
+                <div>
+
+                    <small>Último acesso</small>
+
+                    <h3 class="fs-5">
+                        {{ ultimo_acesso }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel mt-4">
+
+        <h5>
+            Acesso administrativo
+        </h5>
+
+        <hr>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <a href="/registros"
+                   class="action-card">
+
+                    <i class="bi bi-database-lock"></i>
+
+                    <strong>Registros</strong>
+
+                    <span>
+                        Consultar registros autorizados
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <a href="/logs"
+                   class="action-card">
+
+                    <i class="bi bi-journal-text"></i>
+
+                    <strong>Auditoria</strong>
+
+                    <span>
+                        Consultar histórico de acessos
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

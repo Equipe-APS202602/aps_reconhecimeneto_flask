@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}
+Registros | Cofre Digital
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid dashboard">
+
+    <div class="d-flex
+                justify-content-between
+                align-items-center
+                mb-4">
+
+        <div>
+
+            <h2>
+                <i class="bi bi-database-lock"></i>
+                Registros do Cofre
+            </h2>
+
+            <p class="text-secondary">
+                Registros fictícios para fins acadêmicos.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Código</th>
+
+                        <th>Identificação</th>
+
+                        <th>Classificação</th>
+
+                        <th>Nível necessário</th>
+
+                        <th>Status</th>
+
+                        <th>Ação</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for registro in registros %}
+
+                    <tr>
+
+                        <td>
+                            <code>
+                                {{ registro.codigo }}
+                            </code>
+                        </td>
+
+                        <td>
+                            {{ registro.nome_ficticio }}
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-secondary">
+
+                                {{ registro.classificacao }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            {% if registro.nivel_acesso == 'MINISTRO' %}
+
+                            <span class="badge bg-danger">
+                                MINISTRO
+                            </span>
+
+                            {% elif registro.nivel_acesso == 'DIRETOR' %}
+
+                            <span class="badge bg-warning text-dark">
+                                DIRETOR
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                FUNCIONÁRIO
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-success">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                CONTROLADO
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <a href="#"
+                               class="btn btn-sm btn-outline-primary">
+
+                                <i class="bi bi-eye"></i>
+
+                                Visualizar
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

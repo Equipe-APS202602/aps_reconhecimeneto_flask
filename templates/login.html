@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}
+Autenticação | Cofre Digital
+{% endblock %}
+
+
+{% block content %}
+
+<div class="login-page">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5">
+
+                <div class="security-card">
+
+                    <div class="text-center mb-4">
+
+                        <div class="security-icon">
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+                        </div>
+
+                        <h2 class="mt-3">
+                            Cofre Digital
+                        </h2>
+
+                        <p class="text-secondary">
+
+                            Ministério do Meio Ambiente
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="camera-container">
+
+                        <video
+                            id="camera"
+                            autoplay
+                            playsinline>
+                        </video>
+
+                        <div class="face-frame">
+
+                            <div class="corner top-left"></div>
+                            <div class="corner top-right"></div>
+                            <div class="corner bottom-left"></div>
+                            <div class="corner bottom-right"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="status"
+                        class="alert alert-secondary text-center mt-3">
+
+                        <i class="bi bi-camera"></i>
+
+                        Aguardando câmera...
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="startCamera"
+                        class="btn btn-security w-100">
+
+                        <i class="bi bi-camera-fill"></i>
+
+                        Iniciar autenticação
+
+                    </button>
+
+
+                    <div class="mt-4 security-warning">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        Área de acesso restrito.
+                        A autenticação é obrigatória.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+
+{% endblock %}
