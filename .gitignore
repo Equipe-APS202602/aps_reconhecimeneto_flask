@@ -2,3 +2,10 @@
 _pycache_/
 venv/
 facial/dataset/1
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
