@@ -9,7 +9,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Caminho do modelo treinado
-MODEL_PATH = "C:\\Users\\arian\\ESTUDO PESQUISA OPERACIONAL\\facial\\models\\trainer.yml"
+MODEL_PATH = BASE_DIR + "\\facial\\models\\trainer.yml"
 
 print("📁 Pasta do projeto:", BASE_DIR)
 print("🤖 Procurando modelo em:", MODEL_PATH)
@@ -18,6 +18,7 @@ print("🤖 Procurando modelo em:", MODEL_PATH)
 # ==========================================
 # VERIFICAR MODELO
 # ==========================================
+print(BASE_DIR+"\\facial\\models\\trainer.yml")
 
 if not os.path.exists(MODEL_PATH):
     print("\n❌ Modelo não encontrado!")

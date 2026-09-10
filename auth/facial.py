@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "facial", "models", "trainer.yml")
 
 # Localiza o classificador Haar Cascade
-if hasattr(cv2, "data"):
+if hasattr(cv2, "data"): 
     CASCADE_PATH = os.path.join(
         cv2.data.haarcascades, "haarcascade_frontalface_default.xml"
     )
@@ -40,6 +40,7 @@ recognizer = None
 
 if hasattr(cv2, "face") and os.path.exists(MODEL_PATH):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
+    print("📁 Pasta do projeto:", MODEL_PATH)
     recognizer.read(MODEL_PATH)
 
 
