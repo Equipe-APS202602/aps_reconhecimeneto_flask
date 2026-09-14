@@ -1,15 +1,13 @@
 import cv2
 import os
-
+from database.constant import MODEL_PATH,BASE_DIR
 # ==========================================
 # CAMINHOS
 # ==========================================
 
 # Pasta principal do projeto
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Caminho do modelo treinado
-MODEL_PATH = BASE_DIR + "\\facial\\models\\trainer.yml"
 
 print("📁 Pasta do projeto:", BASE_DIR)
 print("🤖 Procurando modelo em:", MODEL_PATH)
@@ -18,7 +16,7 @@ print("🤖 Procurando modelo em:", MODEL_PATH)
 # ==========================================
 # VERIFICAR MODELO
 # ==========================================
-print(BASE_DIR+"\\facial\\models\\trainer.yml")
+
 
 if not os.path.exists(MODEL_PATH):
     print("\n❌ Modelo não encontrado!")
@@ -52,7 +50,7 @@ face_cascade = cv2.CascadeClassifier(cascade_path)
 # ABRIR WEBCAM
 # ==========================================
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(1)
 
 if not camera.isOpened():
     print("❌ Não foi possível acessar a câmera.")

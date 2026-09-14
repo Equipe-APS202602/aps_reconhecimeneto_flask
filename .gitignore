@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 .idea/
 .vscode/
+database/config.json
+facial/dataset/3
+facial/dataset/2

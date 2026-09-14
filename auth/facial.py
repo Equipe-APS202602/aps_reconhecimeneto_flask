@@ -2,17 +2,9 @@
 
 import base64
 import os
-
+from database.constant import MODEL_PATH
 import cv2
 import numpy as np
-
-# =========================================================
-# CAMINHOS
-# =========================================================
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-MODEL_PATH = os.path.join(BASE_DIR, "facial", "models", "trainer.yml")
 
 # Localiza o classificador Haar Cascade
 if hasattr(cv2, "data"): 

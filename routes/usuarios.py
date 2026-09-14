@@ -29,8 +29,7 @@ def index():
             email,
             cargo,
             face_id,
-            ativo,
-            criado_em
+            ativo
         FROM usuarios
         ORDER BY nome
         """)
