@@ -1,5 +1,5 @@
-CREATE DATABASE cofre_meio_ambiente;
 
+CREATE DATABASE cofre_meio_ambiente;
 USE cofre_meio_ambiente;
 
 CREATE TABLE usuarios (

@@ -50,7 +50,7 @@ face_cascade = cv2.CascadeClassifier(cascade_path)
 # ABRIR WEBCAM
 # ==========================================
 
-camera = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(0)
 
 if not camera.isOpened():
     print("❌ Não foi possível acessar a câmera.")

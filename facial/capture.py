@@ -5,8 +5,9 @@ import os
 import time
 from database.constant import DATASET_DIR
 
+
 # CONFIGURAÇÕES
-NUMERO_IMAGENS = 30
+NUMERO_IMAGENS = 10
 LARGURA_ROSTO = 200
 ALTURA_ROSTO = 200
 
@@ -86,7 +87,7 @@ if not camera.isOpened():
 
 ultima_captura = 0
 
-intervalo = 0.25
+intervalo = 1.0  # Intervalo em segundos entre capturas
 
 try:
     while contador < NUMERO_IMAGENS:
