@@ -12,6 +12,8 @@ from flask import (
 
 from auth.facial import reconhecer_rosto
 from database.connection import get_connection
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 login_bp = Blueprint("login", __name__)
 
@@ -183,7 +185,34 @@ def login_facial():
         }
     )
 
+    # # =====================================================
+    # # CRIAR SESSÃO TEMPORÁRIA (ETAPA 1)
+    # # =====================================================
 
+    # session.clear()
+
+    # # Guarda o ID temporariamente. O usuário AINDA NÃO está logado de verdade.
+    # session["temp_usuario_id"] = usuario["id"]
+
+    # # =====================================================
+    # # REGISTRAR ACESSO DA ETAPA 1
+    # # =====================================================
+
+    # registrar_log(
+    #     usuario_id=usuario["id"],
+    #     acao="LOGIN FACIAL - ETAPA 1",
+    #     recurso="LOGIN",
+    #     resultado="PERMITIDO",
+    # )
+
+    # # Retorna sucesso, mas avisa o frontend que precisa da senha agora
+    # return jsonify(
+    #     {
+    #         "sucesso": True,
+    #         "mensagem": "Rosto reconhecido. Por favor, insira sua senha.",
+    #         "exigir_senha": True
+    #     }
+    # )
 # =========================================================
 # LOGOUT
 # =========================================================

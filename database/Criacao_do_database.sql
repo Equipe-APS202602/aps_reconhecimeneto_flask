@@ -1,6 +1,3 @@
-drop database cofre_meio_ambiente;
-
-
 CREATE DATABASE cofre_meio_ambiente;
 
 USE cofre_meio_ambiente;
@@ -105,3 +102,26 @@ CREATE TABLE logs_acesso (
     FOREIGN KEY (usuario_id)
         REFERENCES usuarios(id)
 );
+
+
+create table segunde_virific(
+id INT AUTO_INCREMENT PRIMARY KEY,
+id_face int unique,
+senha VARCHAR(255) NOT NULL,
+constraint fk_face_id foreign key(id_face)
+references usuarios(face_id)
+on delete cascade
+
+);
+select * from usuarios;
+DROP table segunde_virific;
+
+insert into segunde_virific
+(id_face,senha)
+values
+(1,"scrypt:32768:8:1$MG2d16gGYoWtKHHT$bc24745e8f3731c94a8fd19b377b19a1a54afd5e146b8779d1fd79e07863600d7e0786b00a407b83174da2e8c1b3936927889a85282a67d70fa71f9d7a7cc65c")
+;
+
+update usuarios 
+set senha_hash ="scrypt:32768:8:1$MG2d16gGYoWtKHHT$bc24745e8f3731c94a8fd19b377b19a1a54afd5e146b8779d1fd79e07863600d7e0786b00a407b83174da2e8c1b3936927889a85282a67d70fa71f9d7a7cc65c"
+WHERE id = 1;

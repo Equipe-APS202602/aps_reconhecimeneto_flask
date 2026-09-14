@@ -5,7 +5,6 @@ from routes.dashboard import dashboard_bp
 from routes.usuarios import usuarios_bp
 from routes.toxinas import toxinas_bp
 from routes.logs import logs_bp
-from routes.cadrasto import cadrasta_bp
 
 app = Flask(__name__)
 
