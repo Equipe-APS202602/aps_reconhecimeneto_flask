@@ -125,6 +125,26 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## OBRIGATÓRIO — scripts de instalação individuais
+
+Se preferir instalar cada pacote individualmente (ou usar os scripts que foram adicionados a este repositório), há três opções:
+
+- Usando o script PowerShell (Windows PowerShell):
+
+```powershell
+# a partir da raiz do projeto
+.\scripts\install-deps.ps1
+```
+
+- Usando o script Bash (Linux / macOS):
+
+```bash
+# a partir da raiz do projeto
+bash scripts/install-deps.sh
+
+
+Os scripts citados estão em [scripts/install-deps.ps1](scripts/install-deps.ps1) e [scripts/install-deps.sh](scripts/install-deps.sh).
+
 ### 4. Configure o banco de dados
 
 Crie o banco no MySQL e configure um arquivo `.env` na raiz do projeto:
