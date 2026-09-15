@@ -2,8 +2,13 @@ const video = document.getElementById("camera");
 const button = document.getElementById("startCamera");
 const statusElement = document.getElementById("status");
 
-let streamCamera = null;
+// 🟢 ADICIONADO: Mapeamento dos novos elementos da tela de senha
+const blocoFacial = document.getElementById("bloco-facial");
+const blocoSenha = document.getElementById("bloco-senha");
+const btnEnviarSenha = document.getElementById("btn-enviar-senha");
+const inputSenha = document.getElementById("input-senha");
 
+let streamCamera = null;
 
 function atualizarStatus(tipo, mensagem, icone) {
     statusElement.className =
@@ -14,7 +19,6 @@ function atualizarStatus(tipo, mensagem, icone) {
         ${mensagem}
     `;
 }
-
 
 async function iniciarCamera() {
     streamCamera = await navigator.mediaDevices.getUserMedia({
@@ -43,7 +47,6 @@ async function iniciarCamera() {
     await video.play();
 }
 
-
 function capturarImagem() {
     const canvas = document.createElement("canvas");
 
@@ -63,7 +66,6 @@ function capturarImagem() {
     return canvas.toDataURL("image/jpeg", 0.9);
 }
 
-
 function pararCamera() {
     if (!streamCamera) {
         return;
@@ -76,7 +78,6 @@ function pararCamera() {
     streamCamera = null;
     video.srcObject = null;
 }
-
 
 async function autenticarRosto(imagem) {
     const resposta = await fetch("/login/facial", {
@@ -103,7 +104,33 @@ async function autenticarRosto(imagem) {
     return resultado;
 }
 
+// 🟢 ADICIONADO: Nova função para enviar a senha para a Etapa 2
+async function autenticarSenha(senhaDigitada) {
+    const resposta = await fetch("/login/senha", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            senha: senhaDigitada
+        })
+    });
 
+    const resultado = await resposta.json();
+
+    if (!resposta.ok || !resultado.sucesso) {
+        throw new Error(
+            resultado.mensagem || "Senha incorreta ou erro na autenticação."
+        );
+    }
+
+    return resultado;
+}
+
+
+// ==========================================
+// FLUXO DA ETAPA 1 (CÂMERA)
+// ==========================================
 button.addEventListener("click", async () => {
     button.disabled = true;
 
@@ -132,17 +159,17 @@ button.addEventListener("click", async () => {
         const imagem = capturarImagem();
         const resultado = await autenticarRosto(imagem);
 
-        atualizarStatus(
-            "success",
-            `Bem-vindo(a), ${resultado.nome}!`,
-            "bi-check-circle-fill"
-        );
-
-        pararCamera();
-
-        setTimeout(() => {
-            window.location.href = resultado.redirect;
-        }, 800);
+        // 🟡 MODIFICADO: Em vez de redirecionar, troca para a tela de senha
+        if (resultado.sucesso && resultado.exigir_senha) {
+            pararCamera(); // Desliga a luz da webcam
+            
+            // Oculta a câmera e mostra o campo de senha
+            blocoFacial.style.display = "none";
+            blocoSenha.style.display = "block";
+            
+            // Foca o cursor automaticamente para o usuário já ir digitando
+            inputSenha.focus();
+        }
 
     } catch (erro) {
         console.error("Erro na autenticação:", erro);
@@ -162,4 +189,54 @@ button.addEventListener("click", async () => {
 });
 
 
-window.addEventListener("beforeunload", pararCamera);
+// 🟢 ADICIONADO: Evento de clique para o botão da Etapa 2 (Senha)
+// ==========================================
+// FLUXO DA ETAPA 2 (SENHA)
+// ==========================================
+btnEnviarSenha.addEventListener("click", async () => {
+    const senha = inputSenha.value;
+
+    if (!senha) {
+        alert("Por favor, digite sua senha.");
+        return;
+    }
+
+    // Desabilita o botão para evitar cliques duplos
+    btnEnviarSenha.disabled = true;
+    btnEnviarSenha.innerHTML = `<i class="bi bi-hourglass-split"></i> Validando...`;
+
+    try {
+        const resultado = await autenticarSenha(senha);
+
+        // Sucesso total! Muda a cor do botão e redireciona
+        btnEnviarSenha.className = "btn btn-success w-100";
+        btnEnviarSenha.innerHTML = `<i class="bi bi-check-circle-fill"></i> Bem-vindo(a), ${resultado.nome}!`;
+
+        setTimeout(() => {
+            window.location.href = resultado.redirect;
+        }, 800);
+
+    } catch (erro) {
+        console.error("Erro na senha:", erro);
+        
+        // Exibe um alerta com o erro (você pode trocar por um elemento HTML se preferir)
+        alert(erro.message);
+        
+        // Limpa o campo, foca nele novamente e reabilita o botão
+        inputSenha.value = "";
+        inputSenha.focus();
+        btnEnviarSenha.disabled = false;
+        btnEnviarSenha.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> Acessar Cofre`;
+    }
+});
+
+
+// 🟢 ADICIONADO: Permite que o usuário aperte "Enter" no campo de senha para logar
+inputSenha.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        btnEnviarSenha.click();
+    }
+});
+
+window.addEventListener("beforeunload", pararCamera); 

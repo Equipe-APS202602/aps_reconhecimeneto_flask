@@ -26,8 +26,8 @@ login_bp = Blueprint("login", __name__)
 @login_bp.route("/login")
 def login():
     # Se já estiver autenticado, abre o dashboard
-    if session.get("usuario_id"):
-        return redirect(url_for("dashboard.dashboard"))
+    # if session.get("usuario_id"):
+    #     return redirect(url_for("dashboard.dashboard"))
 
     return render_template("login.html")
 
@@ -157,62 +157,62 @@ def login_facial():
     # CRIAR SESSÃO
     # =====================================================
 
-    session.clear()
-
-    session["usuario_id"] = usuario["id"]
-    session["usuario_nome"] = usuario["nome"]
-    session["usuario_email"] = usuario["email"]
-    session["usuario_cargo"] = usuario["cargo"]
-
-    # =====================================================
-    # REGISTRAR ACESSO
-    # =====================================================
-
-    registrar_log(
-        usuario_id=usuario["id"],
-        acao="LOGIN FACIAL",
-        recurso="LOGIN",
-        resultado="PERMITIDO",
-    )
-
-    return jsonify(
-        {
-            "sucesso": True,
-            "mensagem": "Autenticação realizada com sucesso.",
-            "nome": usuario["nome"],
-            "cargo": usuario["cargo"],
-            "redirect": url_for("dashboard.dashboard"),
-        }
-    )
-
-    # # =====================================================
-    # # CRIAR SESSÃO TEMPORÁRIA (ETAPA 1)
-    # # =====================================================
-
     # session.clear()
 
-    # # Guarda o ID temporariamente. O usuário AINDA NÃO está logado de verdade.
-    # session["temp_usuario_id"] = usuario["id"]
+    # session["usuario_id"] = usuario["id"]
+    # session["usuario_nome"] = usuario["nome"]
+    # session["usuario_email"] = usuario["email"]
+    # session["usuario_cargo"] = usuario["cargo"]
 
     # # =====================================================
-    # # REGISTRAR ACESSO DA ETAPA 1
+    # # REGISTRAR ACESSO
     # # =====================================================
 
     # registrar_log(
     #     usuario_id=usuario["id"],
-    #     acao="LOGIN FACIAL - ETAPA 1",
+    #     acao="LOGIN FACIAL",
     #     recurso="LOGIN",
     #     resultado="PERMITIDO",
     # )
 
-    # # Retorna sucesso, mas avisa o frontend que precisa da senha agora
     # return jsonify(
     #     {
     #         "sucesso": True,
-    #         "mensagem": "Rosto reconhecido. Por favor, insira sua senha.",
-    #         "exigir_senha": True
+    #         "mensagem": "Autenticação realizada com sucesso.",
+    #         "nome": usuario["nome"],
+    #         "cargo": usuario["cargo"],
+    #         "redirect": url_for("dashboard.dashboard"),
     #     }
     # )
+
+    # =====================================================
+    # CRIAR SESSÃO TEMPORÁRIA (ETAPA 1)
+    # =====================================================
+
+    session.clear()
+
+    # Guarda o ID temporariamente. O usuário AINDA NÃO está logado de verdade.
+    session["temp_usuario_id"] = usuario["id"]
+
+    # =====================================================
+    # REGISTRAR ACESSO DA ETAPA 1
+    # =====================================================
+
+    registrar_log(
+        usuario_id=usuario["id"],
+        acao="LOGIN FACIAL - ETAPA 1",
+        recurso="LOGIN",
+        resultado="PERMITIDO",
+    )
+
+    # Retorna sucesso, mas avisa o frontend que precisa da senha agora
+    return jsonify(
+        {
+            "sucesso": True,
+            "mensagem": "Rosto reconhecido. Por favor, insira sua senha.",
+            "exigir_senha": True
+        }
+    )
 # =========================================================
 # LOGOUT
 # =========================================================
@@ -269,3 +269,87 @@ def registrar_log(usuario_id, acao, recurso, resultado):
 
         if conexao is not None and conexao.is_connected():
             conexao.close()
+# =========================================================
+# LOGIN POR SENHA (ETAPA 2)
+# =========================================================
+
+@login_bp.route("/login/senha", methods=["POST"])
+def login_senha():
+    # 1. Verifica se o usuário passou pela etapa facial
+    usuario_id = session.get("temp_usuario_id")
+    if not usuario_id:
+        return jsonify({"sucesso": False, "mensagem": "Acesso negado. Faça o reconhecimento facial primeiro."}), 401
+
+    dados = request.get_json(silent=True)
+    if not dados:
+        return jsonify({"sucesso": False, "mensagem": "Dados não enviados."}), 400
+
+    senha_digitada = dados.get("senha")
+    if not senha_digitada:
+        return jsonify({"sucesso": False, "mensagem": "Senha não informada."}), 400
+
+    # 2. Buscar o usuário e o hash da senha no banco de dados
+    conexao = None
+    cursor = None
+    usuario = None
+
+    try:
+        conexao = get_connection()
+        cursor = conexao.cursor(dictionary=True)
+
+        # Lembre-se de garantir que a coluna 'senha_hash' existe na sua tabela
+        cursor.execute(
+            """
+            SELECT id, nome, email, cargo, senha_hash 
+            FROM usuarios 
+            WHERE id = %s 
+            LIMIT 1
+            """,
+            (usuario_id,)
+        )
+        usuario = cursor.fetchone()
+
+    except Exception as erro:
+        print("Erro ao buscar senha do usuário:", erro)
+        return jsonify({"sucesso": False, "mensagem": "Erro ao consultar o banco de dados."}), 500
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conexao is not None and conexao.is_connected():
+            conexao.close()
+
+    # 3. Validar a senha comparando o hash
+    if not usuario or not check_password_hash(usuario["senha_hash"], senha_digitada):
+        registrar_log(
+            usuario_id=usuario_id,
+            acao="LOGIN SENHA - ETAPA 2",
+            recurso="LOGIN",
+            resultado="NEGADO",
+        )
+        return jsonify({"sucesso": False, "mensagem": "Senha incorreta."}), 401
+
+    # 4. Sucesso! Promove a sessão temporária para a sessão real
+    session.pop("temp_usuario_id", None) # Remove a variável temporária
+
+    session["usuario_id"] = usuario["id"]
+    session["usuario_nome"] = usuario["nome"]
+    session["usuario_email"] = usuario["email"]
+    session["usuario_cargo"] = usuario["cargo"]
+
+    registrar_log(
+        usuario_id=usuario["id"],
+        acao="LOGIN COMPLETO",
+        recurso="LOGIN",
+        resultado="PERMITIDO",
+    )
+
+    return jsonify(
+        {
+            "sucesso": True,
+            "mensagem": "Autenticação concluída com sucesso.",
+            "nome": usuario["nome"],
+            "cargo": usuario["cargo"],
+            "redirect": url_for("dashboard.dashboard"),
+        }
+    )

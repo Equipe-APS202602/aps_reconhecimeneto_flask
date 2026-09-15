@@ -1,5 +1,5 @@
 from flask import Flask
-
+ 
 from routes.login import login_bp
 from routes.dashboard import dashboard_bp
 from routes.usuarios import usuarios_bp

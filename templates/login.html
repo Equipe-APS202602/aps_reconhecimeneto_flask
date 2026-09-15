@@ -4,105 +4,83 @@
 Autenticação | Cofre Digital
 {% endblock %}
 
-
 {% block content %}
-
 <div class="login-page">
-
     <div class="container">
-
         <div class="row justify-content-center">
-
             <div class="col-lg-5">
-
                 <div class="security-card">
-
+                    
+                    <!-- Cabeçalho do Card -->
                     <div class="text-center mb-4">
-
                         <div class="security-icon">
-
                             <i class="bi bi-shield-lock-fill"></i>
-
                         </div>
+                        <h2 class="mt-3">Cofre Digital</h2>
+                        <p class="text-secondary">Ministério do Meio Ambiente</p>
+                    </div>
 
-                        <h2 class="mt-3">
-                            Cofre Digital
-                        </h2>
+                    <!-- ========================================== -->
+                    <!-- ETAPA 1: RECONHECIMENTO FACIAL -->
+                    <!-- ========================================== -->
+                    <div id="bloco-facial">
+                        <div class="camera-container">
+                            <video id="camera" autoplay playsinline></video>
+                            <div class="face-frame">
+                                <div class="corner top-left"></div>
+                                <div class="corner top-right"></div>
+                                <div class="corner bottom-left"></div>
+                                <div class="corner bottom-right"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="status" class="alert alert-secondary text-center mt-3">
+                            <i class="bi bi-camera"></i> Aguardando câmera...
+                        </div>
+                        
+                        <button type="button" id="startCamera" class="btn btn-security w-100">
+                            <i class="bi bi-camera-fill"></i> Iniciar autenticação
+                        </button>
+                    </div>
 
-                        <p class="text-secondary">
-
-                            Ministério do Meio Ambiente
-
+                    <!-- ========================================== -->
+                    <!-- ETAPA 2: VERIFICAÇÃO DE SENHA (Oculto) -->
+                    <!-- ========================================== -->
+                    <div id="bloco-senha" style="display: none;">
+                        <div class="alert alert-success text-center mb-3">
+                            <i class="bi bi-check-circle-fill"></i> Rosto reconhecido!
+                        </div>
+                        <p class="text-center text-secondary mb-4">
+                            Por favor, confirme sua identidade digitando sua senha de acesso.
                         </p>
-
-                    </div>
-
-
-                    <div class="camera-container">
-
-                        <video
-                            id="camera"
-                            autoplay
-                            playsinline>
-                        </video>
-
-                        <div class="face-frame">
-
-                            <div class="corner top-left"></div>
-                            <div class="corner top-right"></div>
-                            <div class="corner bottom-left"></div>
-                            <div class="corner bottom-right"></div>
-
+                        
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-key-fill text-secondary"></i>
+                                </span>
+                                <input type="password" id="input-senha" class="form-control border-start-0" placeholder="Digite sua senha" required>
+                            </div>
                         </div>
-
+                        
+                        <button type="button" id="btn-enviar-senha" class="btn btn-security w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Acessar Cofre
+                        </button>
                     </div>
-
-
-                    <div
-                        id="status"
-                        class="alert alert-secondary text-center mt-3">
-
-                        <i class="bi bi-camera"></i>
-
-                        Aguardando câmera...
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        id="startCamera"
-                        class="btn btn-security w-100">
-
-                        <i class="bi bi-camera-fill"></i>
-
-                        Iniciar autenticação
-
-                    </button>
-
-
+                    
+                    <!-- Aviso de Segurança no Rodapé -->
                     <div class="mt-4 security-warning">
-
                         <i class="bi bi-exclamation-triangle"></i>
-
-                        Área de acesso restrito.
-                        A autenticação é obrigatória.
-
+                        Área de acesso restrito. A autenticação é obrigatória.
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
-
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
-
 {% endblock %}
