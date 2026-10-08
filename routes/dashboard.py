@@ -69,13 +69,69 @@ def dashboard():
         acessos_negados = cursor.fetchone()["total"]
 
         # =================================================
-        # DADOS ENVIADOS PARA O TEMPLATE
+        # REGISTROS DISPONÍVEIS
+        # =================================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM registros_cofre
+            WHERE nivel_acesso IN ('FUNCIONARIO', 'DIRETOR')
+        """)
+
+        registros_disponiveis = cursor.fetchone()["total"]
+
+        # =================================================
+        # ACESSOS REALIZADOS HOJE
+        # =================================================
+
+        usuario_id = session.get("usuario_id")
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS total
+            FROM logs_acesso
+            WHERE usuario_id = %s
+              AND DATE(data_hora) = CURDATE()
+        """,
+            (usuario_id,),
+        )
+
+        acessos_hoje = cursor.fetchone()["total"]
+
+        # =================================================
+        # ÚLTIMO ACESSO
+        # =================================================
+
+        cursor.execute(
+            """
+            SELECT data_hora
+            FROM logs_acesso
+            WHERE usuario_id = %s
+              AND resultado = 'PERMITIDO'
+            ORDER BY data_hora DESC
+            LIMIT 1
+        """,
+            (usuario_id,),
+        )
+
+        ultimo_acesso = cursor.fetchone()
+
+        if ultimo_acesso:
+            ultimo_acesso = ultimo_acesso["data_hora"]
+        else:
+            ultimo_acesso = None
+
+        # =================================================
+        # DADOS ENVIADOS PARA OS TEMPLATES
         # =================================================
 
         dados = {
             "logs": logs,
             "acessos_permitidos": acessos_permitidos,
             "acessos_negados": acessos_negados,
+            "registros_disponiveis": registros_disponiveis,
+            "acessos_hoje": acessos_hoje,
+            "ultimo_acesso": ultimo_acesso,
         }
 
         # =================================================
@@ -83,13 +139,16 @@ def dashboard():
         # =================================================
 
         if cargo == "MINISTRO":
+
             return render_template("dashboard/ministro.html", **dados)
 
         if cargo == "DIRETOR":
+
             return render_template("dashboard/diretor.html", **dados)
 
         return render_template("dashboard/funcionario.html", **dados)
 
     finally:
+
         cursor.close()
         connection.close()

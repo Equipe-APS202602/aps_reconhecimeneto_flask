@@ -32,7 +32,7 @@
 
         <div>
           <small>Registros disponíveis</small>
-          <h3>{{ total_registros | default(0, true) }}</h3>
+          <h3>{{ registros_disponiveis }}</h3>
         </div>
       </div>
     </div>
@@ -43,7 +43,7 @@
 
         <div>
           <small>Acessos hoje</small>
-          <h3>{{ acessos_hoje | default(0, true) }}</h3>
+          <h3>{{ acessos_hoje }}</h3>
         </div>
       </div>
     </div>
@@ -55,7 +55,8 @@
         <div>
           <small>Último acesso</small>
           <h3 class="fs-5">
-            {{ ultimo_acesso | default("Nenhum acesso registrado", true) }}
+            {% if ultimo_acesso %} {{ ultimo_acesso.strftime('%d/%m/%Y %H:%M')
+            }} {% else %} Nenhum acesso registrado {% endif %}
           </h3>
         </div>
       </div>
@@ -162,7 +163,7 @@
       </li>
     </ol>
   </div>
-
+  ```html
   <!-- CONSULTA DE REGISTROS -->
   <div class="panel mt-4">
     <h5>
@@ -174,18 +175,17 @@
 
     <div class="row g-3">
       <div class="col-md-6">
-        <a href="/toxinas/" class="action-card h-100">
+        <a href="{{ url_for('toxinas.index') }}" class="action-card h-100">
           <i class="bi bi-database-lock"></i>
 
           <strong>Consultar registros</strong>
 
           <span>
-            Acessar os registros disponíveis para seu nível de permissão.
+            Acessar as toxinas disponíveis para seu nível de permissão.
           </span>
         </a>
       </div>
     </div>
   </div>
+  ``` {% endblock %}
 </div>
-
-{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block title %} Meu Perfil | Cofre Digital {%
+endblock %} {% block content %}
+
+<div class="container dashboard">
+  <div class="mb-4">
+    <h2>
+      <i class="bi bi-person-vcard me-2"></i>
+      Meu Perfil
+    </h2>
+
+    <p class="text-secondary">Consulte as informações da sua conta.</p>
+  </div>
+
+  <div class="panel">
+    <div class="text-center mb-4">
+      <div class="profile-icon mx-auto mb-3">
+        <i class="bi bi-person-fill"></i>
+      </div>
+
+      <h3>{{ usuario.nome }}</h3>
+
+      <span class="badge bg-dark"> {{ usuario.cargo }} </span>
+
+      <div class="mt-2">
+        {% if usuario.ativo %}
+        <span class="badge bg-success">ATIVO</span>
+        {% else %}
+        <span class="badge bg-secondary">INATIVO</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <hr />
+
+    <h5 class="mb-3">
+      <i class="bi bi-person-lines-fill me-2"></i>
+      Dados da conta
+    </h5>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">Nome completo</small>
+          <div><strong>{{ usuario.nome }}</strong></div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">E-mail</small>
+          <div><strong>{{ usuario.email }}</strong></div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">Identificação</small>
+          <div><strong>#{{ usuario.id }}</strong></div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">Cargo</small>
+          <div><strong>{{ usuario.cargo }}</strong></div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">Reconhecimento facial</small>
+          <div>
+            {% if usuario.face_id %}
+            <span class="text-success">
+              <i class="bi bi-check-circle-fill"></i>
+              Cadastrado
+            </span>
+            {% else %}
+            <span class="text-secondary">
+              <i class="bi bi-exclamation-circle"></i>
+              Não cadastrado
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-info">
+          <small class="text-secondary">Data de cadastro</small>
+          <div>
+            <strong>
+              {% if usuario.criado_em %} {{ usuario.criado_em.strftime('%d/%m/%Y
+              %H:%M') }} {% else %} Não informada {% endif %}
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="alert alert-info mb-4">
+      <i class="bi bi-shield-lock me-2"></i>
+      Seu acesso e suas permissões são definidos pelo cargo associado à sua
+      conta.
+    </div>
+
+    <div class="text-end">
+      <a
+        href="{{ url_for('dashboard.dashboard') }}"
+        class="btn btn-outline-secondary"
+      >
+        <i class="bi bi-arrow-left me-1"></i>
+        Voltar ao dashboard
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

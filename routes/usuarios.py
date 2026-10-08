@@ -11,7 +11,7 @@ from flask import (
     session,
 )
 
-from auth.permissions import permission_required
+from auth.permissions import permission_required , login_required
 
 from database.connection import get_connection
 import bcrypt
@@ -32,27 +32,32 @@ usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/usuarios")
 def index():
 
     conexao = get_connection()
-
     cursor = conexao.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT
-            id,
-            nome,
-            email,
-            cargo,
-            face_id,
-            ativo
-        FROM usuarios
-        ORDER BY nome
+    try:
+
+        cursor.execute("""
+            SELECT
+                u.id,
+                u.nome,
+                u.email,
+                u.cargo,
+                u.face_id,
+                u.ativo,
+                cadastrador.nome AS nome_cadastrador
+            FROM usuarios u
+            LEFT JOIN usuarios cadastrador
+                ON u.cadastrado_por = cadastrador.id
+            ORDER BY u.nome
         """)
 
-    usuarios = cursor.fetchall()
+        usuarios = cursor.fetchall()
 
-    cursor.close()
-    conexao.close()
+        return render_template("usuarios/index.html", usuarios=usuarios)
 
-    return render_template("usuarios/index.html", usuarios=usuarios)
+    finally:
+        cursor.close()
+        conexao.close()
 
 
 # # =========================================================
@@ -391,6 +396,45 @@ def salvar_rosto(usuario_id):
             jsonify({"sucesso": False, "mensagem": f"Erro ao salvar imagem: {erro}"}),
             500,
         )
+
+
+@usuarios_bp.route("/perfil")
+@login_required
+def perfil():
+
+    usuario_id = session.get("usuario_id")
+
+    conexao = get_connection()
+    cursor = conexao.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                id,
+                nome,
+                email,
+                cargo,
+                face_id,
+                ativo,
+                criado_em
+            FROM usuarios
+            WHERE id = %s
+        """,
+            (usuario_id,),
+        )
+
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            flash("Usuário não encontrado.", "warning")
+            return redirect(url_for("dashboard.dashboard"))
+
+        return render_template("usuarios/perfil.html", usuario=usuario)
+
+    finally:
+        cursor.close()
+        conexao.close()
 
 
 # =========================================================

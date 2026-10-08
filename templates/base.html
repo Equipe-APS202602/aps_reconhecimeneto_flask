@@ -93,46 +93,53 @@
 
             </ul>
 
-            <div class="dropdown">
+<div class="dropdown">
 
-                <button
-                    class="btn btn-outline-light dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <i class="bi bi-person-circle"></i>
-                    {{ session.get("usuario_nome", "Usuário") }}
-                </button>
+    <button
+        class="btn btn-outline-light dropdown-toggle"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+    >
+        <i class="bi bi-person-circle"></i>
+        {{ session.get("usuario_nome", "Usuário") }}
+    </button>
 
-                <ul class="dropdown-menu dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-end">
 
-                    <li>
-                        <a class="dropdown-item" href="/perfil">
-                            <i class="bi bi-person"></i>
-                            Meu perfil
-                        </a>
-                    </li>
+        <li>
+            <a class="dropdown-item"
+               href="{{ url_for('usuarios.perfil') }}">
+                <i class="bi bi-person"></i>
+                Meu perfil
+            </a>
+        </li>
 
-                    {% if session.get("usuario_cargo") == "MINISTRO" %}
-                        <li>
-                            <a class="dropdown-item" href="/configuracoes">
-                                <i class="bi bi-gear"></i>
-                                Configurações
-                            </a>
-                        </li>
-                    {% endif %}
+        {% if session.get("usuario_cargo") == "MINISTRO" %}
+            <li>
+                <a class="dropdown-item"
+                   href="/configuracoes">
+                    <i class="bi bi-gear"></i>
+                    Configurações
+                </a>
+            </li>
+        {% endif %}
 
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
 
-                    <li>
-                        <a class="dropdown-item text-danger" href="/logout">
-                            <i class="bi bi-box-arrow-right"></i>
-                            Sair
-                        </a>
-                    </li>
+        <li>
+            <a class="dropdown-item text-danger"
+               href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                Sair
+            </a>
+        </li>
+
+    </ul>
+
+</div>
 
                 </ul>
             </div>

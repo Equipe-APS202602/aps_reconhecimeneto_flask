@@ -1,13 +1,6 @@
 # routes/toxinas.py
 
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-)
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from auth.permissions import (
     login_required,
@@ -28,30 +21,45 @@ toxinas_bp = Blueprint("toxinas", __name__, url_prefix="/registros")
 @login_required
 def index():
 
-    conexao = get_connection()
+    cargo = session.get("usuario_cargo", "").upper()
 
+    conexao = get_connection()
     cursor = conexao.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT
-            id,
-            codigo,
-            nome_ficticio,
-            classificacao,
-            nivel_acesso,
-            descricao,
-            quantidade_simulada,
-            criado_em
-        FROM registros_cofre
-        ORDER BY id DESC
-        """)
+    try:
+        consulta = """
+            SELECT
+                id,
+                codigo,
+                nome_ficticio,
+                classificacao,
+                nivel_acesso,
+                descricao,
+                quantidade_simulada,
+                criado_em
+            FROM registros_cofre
+        """
 
-    registros = cursor.fetchall()
+        if cargo == "DIRETOR":
+            consulta += """
+                WHERE nivel_acesso IN ('FUNCIONARIO', 'DIRETOR')
+            """
 
-    cursor.close()
-    conexao.close()
+        elif cargo == "FUNCIONARIO":
+            consulta += """
+                WHERE nivel_acesso = 'FUNCIONARIO'
+            """
 
-    return render_template("registros/index.html", registros=registros)
+        consulta += " ORDER BY id DESC"
+
+        cursor.execute(consulta)
+        registros = cursor.fetchall()
+
+        return render_template("registros/index.html", registros=registros)
+
+    finally:
+        cursor.close()
+        conexao.close()
 
 
 # =========================================================
