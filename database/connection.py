@@ -1,24 +1,53 @@
+import json
 import os
 import mysql.connector
-from dotenv import load_dotenv
-from database.constant import host, database, user, password, port
-load_dotenv()
+
+# =========================================================
+# CAMINHO DO CONFIG.JSON
+# =========================================================
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+
+
+# =========================================================
+# CARREGAR CONFIGURAÇÕES
+# =========================================================
+
+with open(CONFIG_PATH, "r", encoding="utf-8") as arquivo:
+    config = json.load(arquivo)
+
+
+# =========================================================
+# CONEXÃO COM MYSQL
+# =========================================================
+
+
 def get_connection():
 
-        return mysql.connector.connect(
-            host=os.getenv("DB_HOST", host),
-            user=os.getenv("DB_USER", user),
-            password=os.getenv("DB_PASSWORD", password),
-            database=os.getenv("DB_NAME", database),
-            port=int(os.getenv("DB_PORT", port)),
-        )
+    return mysql.connector.connect(
+        host=config["-host-"],
+        database=config["-db-"],
+        user=config["-user-"],
+        password=config["-senha-"],
+        port=int(config["-porta-"]),
+    )
+
+
+# =========================================================
+# TESTAR CONEXÃO
+# =========================================================
 
 if __name__ == "__main__":
-    # Testar a conexão com o banco de dados
+
     try:
+
         connection = get_connection()
-        cursor = connection.cursor()
+
         print("Conexão com o banco de dados estabelecida com sucesso!")
+
         connection.close()
+
     except mysql.connector.Error as err:
+
         print(f"Erro ao conectar ao banco de dados: {err}")
