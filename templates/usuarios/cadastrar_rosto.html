@@ -1,0 +1,280 @@
+{% extends "base.html" %} {% block title %}Cadastro facial | Cofre Digital{%
+endblock %} {% block content %}
+<div class="container dashboard">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div
+        id="cadastroFacial"
+        class="panel"
+        data-url="{{ url_for(
+                    'usuarios.salvar_rosto',
+                    usuario_id=usuario_id
+                ) }}"
+        data-total="{{ numero_imagens }}"
+      >
+        <h2>
+          <i class="bi bi-person-bounding-box"></i>
+          Cadastro facial
+        </h2>
+
+        <p>
+          Usuário: <strong>{{ usuario.nome }}</strong><br />
+          Cargo: <strong>{{ usuario.cargo }}</strong>
+        </p>
+
+        <p class="text-secondary">
+          Mantenha somente a pessoa cadastrada diante da câmera. Utilize boa
+          iluminação e varie levemente a posição do rosto durante a coleta.
+        </p>
+
+        <video
+          id="videoCadastro"
+          autoplay
+          playsinline
+          muted
+          class="rounded bg-dark w-100"
+        ></video>
+
+        <div class="progress mt-3">
+          <div
+            id="progressoCadastro"
+            class="progress-bar"
+            role="progressbar"
+            aria-label="Imagens capturadas"
+            aria-valuemin="0"
+            aria-valuemax="{{ numero_imagens }}"
+            aria-valuenow="0"
+            style="width: 0%"
+          >
+            0 / {{ numero_imagens }}
+          </div>
+        </div>
+
+        <div
+          id="statusCadastro"
+          class="alert alert-secondary mt-3"
+          role="status"
+          aria-live="polite"
+        >
+          Clique em iniciar para abrir a câmera.
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <button id="iniciarCadastro" type="button" class="btn btn-security">
+            Iniciar captura
+          </button>
+
+          <button
+            id="pausarCadastro"
+            type="button"
+            class="btn btn-outline-secondary"
+            disabled
+          >
+            Pausar
+          </button>
+
+          <a
+            href="{{ url_for('usuarios.index') }}"
+            class="btn btn-outline-secondary"
+          >
+            Voltar
+          </a>
+        </div>
+
+        <p class="text-secondary small mt-3 mb-0">
+          Ao finalizar as imagens, aguarde a confirmação do treinamento antes de
+          sair desta página.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  (() => {
+    const painel = document.getElementById("cadastroFacial");
+    const video = document.getElementById("videoCadastro");
+    const iniciar = document.getElementById("iniciarCadastro");
+    const pausar = document.getElementById("pausarCadastro");
+    const status = document.getElementById("statusCadastro");
+    const progresso = document.getElementById("progressoCadastro");
+
+    const total = Number(painel.dataset.total) || 30;
+
+    let stream = null;
+    let capturando = false;
+    let ocupado = false;
+    let concluido = false;
+    let quantidade = 0;
+
+    const aguardar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function mensagem(texto, tipo = "secondary") {
+      status.textContent = texto;
+      status.className = `alert alert-${tipo} mt-3`;
+    }
+
+    function atualizarProgresso(valor) {
+      quantidade = valor;
+      const percentual = Math.min(100, (valor / total) * 100);
+
+      progresso.style.width = `${percentual}%`;
+      progresso.textContent = `${valor} / ${total}`;
+      progresso.setAttribute("aria-valuenow", String(valor));
+    }
+
+    function pararCamera() {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        stream = null;
+      }
+
+      video.srcObject = null;
+    }
+
+    async function enviarImagem() {
+      if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+        throw new Error("Aguarde a câmera exibir a imagem.");
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const contexto = canvas.getContext("2d");
+      contexto.drawImage(video, 0, 0);
+
+      // A próxima imagem pode completar a coleta.
+      if (quantidade >= total - 1) {
+        mensagem(
+          "Enviando imagem. Se a coleta estiver completa, " +
+            "o servidor iniciará o treinamento. Aguarde.",
+          "info",
+        );
+      }
+
+      const resposta = await fetch(painel.dataset.url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imagem: canvas.toDataURL("image/jpeg", 0.9),
+        }),
+      });
+
+      let resultado;
+
+      try {
+        resultado = await resposta.json();
+      } catch {
+        throw new Error("Resposta inválida do servidor. Confira o terminal.");
+      }
+
+      if (!resposta.ok || !resultado.sucesso) {
+        throw new Error(resultado.mensagem || "Falha no cadastro facial.");
+      }
+
+      atualizarProgresso(Number(resultado.quantidade) || 0);
+
+      if (resultado.concluido) {
+        concluido = true;
+        capturando = false;
+        pararCamera();
+
+        mensagem(resultado.mensagem, "success");
+
+        if (resultado.redirecionar) {
+          window.location.assign(resultado.redirecionar);
+        }
+
+        return;
+      }
+
+      mensagem(resultado.mensagem, "info");
+    }
+
+    iniciar.addEventListener("click", async () => {
+      if (ocupado || concluido) return;
+
+      ocupado = true;
+      iniciar.disabled = true;
+      pausar.disabled = false;
+      capturando = true;
+
+      try {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error(
+            "Abra o sistema em HTTPS ou localhost " + "para utilizar a câmera.",
+          );
+        }
+
+        mensagem("Abrindo câmera...", "info");
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+          },
+          audio: false,
+        });
+
+        video.srcObject = stream;
+        await video.play();
+
+        while (capturando) {
+          if (video.readyState < 2 || !video.videoWidth) {
+            await aguardar(200);
+            continue;
+          }
+
+          await enviarImagem();
+
+          if (capturando) {
+            await aguardar(600);
+          }
+        }
+
+        if (!concluido) {
+          mensagem(
+            "Captura pausada. As imagens já enviadas " + "continuam salvas.",
+            "warning",
+          );
+        }
+      } catch (erro) {
+        capturando = false;
+        mensagem(
+          erro.message + " Clique em retomar para tentar novamente.",
+          "danger",
+        );
+      } finally {
+        pararCamera();
+        ocupado = false;
+        pausar.disabled = true;
+        iniciar.disabled = concluido;
+        iniciar.textContent = concluido
+          ? "Cadastro concluído"
+          : "Retomar captura";
+      }
+    });
+
+    pausar.addEventListener("click", () => {
+      capturando = false;
+      pausar.disabled = true;
+
+      mensagem(
+        "Pausando após a resposta do servidor. " +
+          "Um treinamento já iniciado continuará até terminar.",
+        "warning",
+      );
+    });
+
+    window.addEventListener("pagehide", () => {
+      capturando = false;
+      pararCamera();
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Auditoria | Cofre Digital
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid dashboard">
+
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-journal-text"></i>
+            Auditoria
+        </h2>
+
+        <p class="text-secondary">
+            Histórico das ações realizadas no sistema.
+        </p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+
+        <a
+            href="{{ url_for('logs.index') }}"
+            class="btn
+                {% if not filtro_resultado %}
+                    btn-primary
+                {% else %}
+                    btn-outline-primary
+                {% endif %}
+            "
+        >
+            <i class="bi bi-list"></i>
+            Todos
+        </a>
+
+        <a
+            href="{{ url_for('logs.index', resultado='PERMITIDO') }}"
+            class="btn
+                {% if filtro_resultado == 'PERMITIDO' %}
+                    btn-success
+                {% else %}
+                    btn-outline-success
+                {% endif %}
+            "
+        >
+            <i class="bi bi-check-circle"></i>
+            Permitidos
+        </a>
+
+        <a
+            href="{{ url_for('logs.index', resultado='NEGADO') }}"
+            class="btn
+                {% if filtro_resultado == 'NEGADO' %}
+                    btn-danger
+                {% else %}
+                    btn-outline-danger
+                {% endif %}
+            "
+        >
+            <i class="bi bi-x-circle"></i>
+            Negados
+        </a>
+
+    </div>
+
+    <div class="panel">
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Usuário</th>
+                        <th>Cargo</th>
+                        <th>Ação</th>
+                        <th>Recurso</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for log in logs %}
+
+                        <tr>
+                            <td>
+                                {% if log.data_hora %}
+                                    {{ log.data_hora.strftime(
+                                        "%d/%m/%Y %H:%M:%S"
+                                    ) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ log.nome or "Usuário não identificado" }}
+                            </td>
+
+                            <td>
+                                {{ log.cargo or "—" }}
+                            </td>
+
+                            <td>
+                                {{ log.acao }}
+                            </td>
+
+                            <td>
+                                {{ log.recurso }}
+                            </td>
+
+                            <td>
+                                {% if log.resultado == "PERMITIDO" %}
+
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i>
+                                        PERMITIDO
+                                    </span>
+
+                                {% elif log.resultado == "NEGADO" %}
+
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i>
+                                        NEGADO
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ log.resultado }}
+                                    </span>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+                            <td
+                                colspan="6"
+                                class="text-center text-secondary py-4"
+                            >
+                                <i class="bi bi-inbox"></i>
+                                Nenhum registro de auditoria encontrado.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

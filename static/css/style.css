@@ -1,0 +1,427 @@
+:root {
+
+    --primary: #0b3d5c;
+    --primary-dark: #082c42;
+    --secondary: #64748b;
+
+    --background: #f4f6f8;
+    --card: #ffffff;
+
+    --border: #e2e8f0;
+
+}
+
+
+body {
+
+    background: var(--background);
+
+    color: #1e293b;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+}
+
+
+/* NAVBAR */
+
+.security-navbar {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary-dark),
+            var(--primary)
+        );
+
+    min-height: 64px;
+
+}
+
+
+.navbar-brand {
+
+    letter-spacing: 1px;
+
+}
+
+
+/* LOGIN */
+
+.login-page {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #dbeafe,
+            #f4f6f8 55%
+        );
+
+}
+
+
+.security-card {
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 35px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0, 0, 0, .10);
+
+    border: 1px solid var(--border);
+
+}
+
+
+.security-icon {
+
+    width: 75px;
+
+    height: 75px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: auto;
+
+    background: #e0f2fe;
+
+    color: var(--primary);
+
+    font-size: 35px;
+
+}
+
+
+/* CAMERA */
+
+.camera-container {
+
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    background: #0f172a;
+
+}
+
+
+.camera-container video {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.face-frame {
+
+    position: absolute;
+
+    inset: 15% 25%;
+
+    border: 2px solid rgba(255,255,255,.8);
+
+    border-radius: 50%;
+
+}
+
+
+/* BOTÕES */
+
+.btn-security {
+
+    background: var(--primary);
+
+    color: white;
+
+    border: none;
+
+}
+
+
+.btn-security:hover {
+
+    background: var(--primary-dark);
+
+    color: white;
+
+}
+
+
+/* DASHBOARD */
+
+.dashboard {
+
+    padding: 35px;
+
+}
+
+
+.stat-card {
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    padding: 22px;
+
+    display: flex;
+
+    gap: 18px;
+
+    align-items: center;
+
+    transition: .2s;
+
+}
+
+
+.stat-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(0,0,0,.08);
+
+}
+
+
+.stat-card > i {
+
+    font-size: 32px;
+
+    color: var(--primary);
+
+}
+
+
+.stat-card small {
+
+    color: var(--secondary);
+
+}
+
+
+.stat-card h3 {
+
+    margin: 0;
+
+}
+
+
+/* PAINEL */
+
+.panel {
+
+    background: white;
+
+    border-radius: 15px;
+
+    border: 1px solid var(--border);
+
+    padding: 25px;
+
+}
+
+
+/* ACESSO */
+
+.access-level {
+
+    display: flex;
+
+    gap: 15px;
+
+    align-items: center;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+}
+
+
+.access-level i {
+
+    font-size: 28px;
+
+}
+
+
+.access-level small {
+
+    display: block;
+
+    color: var(--secondary);
+
+}
+
+
+.minister {
+
+    background: #fee2e2;
+
+    color: #991b1b;
+
+}
+
+
+.employee {
+
+    background: #dcfce7;
+
+    color: #166534;
+
+}
+
+
+/* CARDS DE AÇÃO */
+
+.action-card {
+
+    text-decoration: none;
+
+    color: inherit;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    padding: 20px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    transition: .2s;
+
+}
+
+
+.action-card:hover {
+
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+}
+
+
+.action-card i {
+
+    font-size: 28px;
+
+    color: var(--primary);
+
+}
+
+
+.action-card span {
+
+    color: var(--secondary);
+
+    font-size: 14px;
+
+}
+
+
+/* ACESSO NEGADO */
+
+.access-denied {
+
+    min-height: 75vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+}
+
+
+.denied-icon {
+
+    font-size: 90px;
+
+    color: #dc2626;
+
+}
+
+
+/* PERFIL */
+
+.profile-icon {
+
+    width: 80px;
+
+    height: 80px;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: var(--primary);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 40px;
+
+    margin: auto;
+
+}
+
+
+/* FOOTER */
+
+.security-footer {
+
+    padding: 20px;
+
+    color: var(--secondary);
+
+}

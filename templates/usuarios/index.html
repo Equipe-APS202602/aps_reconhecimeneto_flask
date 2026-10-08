@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block title %}Usuários | Cofre Digital{% endblock
+%} {% block content %}
+<div class="container-fluid dashboard">
+  <div
+    class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
+  >
+    <div>
+      <h2>
+        <i class="bi bi-people"></i>
+        Usuários
+      </h2>
+      <p class="text-secondary mb-0">Gerenciamento de usuários autorizados.</p>
+    </div>
+
+    <a href="{{ url_for('usuarios.criar') }}" class="btn btn-security">
+      <i class="bi bi-person-plus"></i>
+      Novo usuário
+    </a>
+  </div>
+
+  {% if session.get("cadastro_facial_usuario_id") %}
+  <div class="alert alert-warning">
+    Há um cadastro facial pendente.
+    <a
+      href="{{ url_for(
+                'usuarios.capturar_rosto',
+                usuario_id=session.get('cadastro_facial_usuario_id')
+            ) }}"
+      class="alert-link"
+    >
+      Continuar cadastro
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="panel">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Cargo</th>
+            <th>Status</th>
+            <th>Cadastrado por</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for usuario in usuarios %}
+          <tr>
+            <td>
+              <i class="bi bi-person-circle"></i>
+              {{ usuario.nome }}
+            </td>
+            <td>{{ usuario.email }}</td>
+            <td>
+              <span class="badge bg-dark"> {{ usuario.cargo }} </span>
+            </td>
+            <td>
+              {% if usuario.ativo %}
+              <span class="badge bg-success">ATIVO</span>
+              {% else %}
+              <span class="badge bg-secondary">INATIVO</span>
+              {% endif %}
+            </td>
+            <td>
+              {{ usuario.nome_cadastrador | default("Não informado", true) }}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-secondary">
+              Nenhum usuário encontrado.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %} {% block title %}Cadastrar usuário | Cofre Digital{%
+endblock %} {% block content %}
+<div class="container dashboard">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="panel">
+        <h2>
+          <i class="bi bi-person-plus"></i>
+          Cadastrar usuário
+        </h2>
+
+        <p class="text-secondary">
+          Preencha os dados. Na próxima etapa, registre o rosto do novo usuário.
+          O e-mail será utilizado para entrar no sistema.
+        </p>
+
+        <form method="post" action="{{ url_for('usuarios.criar') }}">
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input
+              id="nome"
+              name="nome"
+              type="text"
+              class="form-control"
+              value="{{ request.form.get('nome', '') }}"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="form-control"
+              value="{{ request.form.get('email', '') }}"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="cargo" class="form-label">Cargo</label>
+
+            <select id="cargo" name="cargo" class="form-select" required>
+              <option value="" selected disabled>Selecione o cargo</option>
+
+              {% for cargo in cargos_disponiveis %}
+              <option value="{{ cargo }}">{{ cargo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input
+              id="senha"
+              name="senha"
+              type="password"
+              class="form-control"
+              minlength="6"
+              autocomplete="new-password"
+              required
+            />
+            <div class="form-text">Utilize pelo menos 6 caracteres.</div>
+          </div>
+
+          <div class="mb-4">
+            <label for="confirmar_senha" class="form-label">
+              Confirmar senha
+            </label>
+            <input
+              id="confirmar_senha"
+              name="confirmar_senha"
+              type="password"
+              class="form-control"
+              minlength="6"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-security">
+              Salvar e cadastrar rosto
+            </button>
+
+            <a
+              href="{{ url_for('usuarios.index') }}"
+              class="btn btn-outline-secondary"
+            >
+              Voltar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

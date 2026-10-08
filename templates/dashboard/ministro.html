@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | Ministro
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid dashboard">
+
+    <div class="row mb-4">
+
+        <div class="col">
+
+            <h2>
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </h2>
+
+            <p class="text-secondary">
+                Visão geral do sistema de segurança.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+            <a
+                 href="{{ url_for('toxinas.index') }}"
+                class="text-decoration-none"
+            >
+
+                <i class="bi bi-database-lock"></i>
+
+                <div>
+
+                    <small>Registros</small>
+
+                    <h3>{{ total_registros }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+</a>
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <i class="bi bi-people"></i>
+
+                <div>
+
+                    <small>Usuários</small>
+
+                    <h3>{{ total_usuarios }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <i class="bi bi-shield-check"></i>
+
+                <div>
+
+                    <small>Acessos permitidos</small>
+
+                    <h3>{{ acessos_permitidos }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <i class="bi bi-shield-x"></i>
+
+                <div>
+
+                    <small>Acessos negados</small>
+
+                    <h3>{{ acessos_negados }}</h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h5>
+                        Atividade recente
+                    </h5>
+
+                    <a href="/logs"
+                       class="btn btn-sm btn-outline-secondary">
+
+                        Ver tudo
+
+                    </a>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table align-middle">
+
+                        <thead>
+
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Ação</th>
+                                <th>Resultado</th>
+                                <th>Data</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for log in logs %}
+
+                            <tr>
+
+                                <td>
+                                    {{ log.usuario }}
+                                </td>
+
+                                <td>
+                                    {{ log.acao }}
+                                </td>
+
+                                <td>
+
+                                    {% if log.resultado == 'PERMITIDO' %}
+
+                                    <span class="badge bg-success">
+                                        PERMITIDO
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger">
+                                        NEGADO
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ log.data_hora }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-4">
+
+            <div class="panel">
+
+                <h5>Nível de acesso</h5>
+
+                <hr>
+
+                <div class="access-level minister">
+
+                    <i class="bi bi-shield-fill-check"></i>
+
+                    <div>
+
+                        <strong>MINISTRO</strong>
+
+                        <small>
+                            Acesso total
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

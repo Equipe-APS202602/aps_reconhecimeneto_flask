@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | Funcionário
+{% endblock %}
+
+{% block content %}
+
+<div class="container dashboard">
+
+    <div class="text-center mb-5">
+
+        <div class="profile-icon">
+
+            <i class="bi bi-person-fill"></i>
+
+        </div>
+
+        <h2>
+            Bem-vindo, {{ current_user.nome }}
+        </h2>
+
+        <p class="text-secondary">
+
+            Funcionário • Acesso limitado
+
+        </p>
+
+    </div>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="panel">
+
+                <div class="access-level employee">
+
+                    <i class="bi bi-person-check"></i>
+
+                    <div>
+
+                        <strong>
+                            NÍVEL FUNCIONÁRIO
+                        </strong>
+
+                        <small>
+                            Acesso operacional limitado
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <h5>
+                    Recursos disponíveis
+                </h5>
+
+
+                <div class="row g-3 mt-2">
+
+                    <div class="col-md-6">
+
+                        <a href="/registros"
+                           class="action-card">
+
+                            <i class="bi bi-search"></i>
+
+                            <strong>
+                                Consultar registros
+                            </strong>
+
+                            <span>
+                                Visualizar informações autorizadas.
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="alert alert-warning mt-4">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    Algumas informações estão protegidas
+                    pelo nível de acesso da sua conta.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
