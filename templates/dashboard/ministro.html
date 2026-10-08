@@ -1,232 +1,279 @@
-{% extends "base.html" %}
-
-{% block title %}
-Dashboard | Ministro
-{% endblock %}
-
+{% extends "base.html" %} {% block title %} Dashboard | Ministro {% endblock %}
 {% block content %}
 
 <div class="container-fluid dashboard">
+  <!-- ===================================================== -->
+  <!-- CABEÇALHO -->
+  <!-- ===================================================== -->
 
-    <div class="row mb-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2>
+        <i class="bi bi-speedometer2"></i>
+        Dashboard
+      </h2>
 
-        <div class="col">
+      <p class="text-secondary">Visão geral do sistema de segurança.</p>
+    </div>
+  </div>
 
-            <h2>
-                <i class="bi bi-speedometer2"></i>
-                Dashboard
-            </h2>
+  <!-- ===================================================== -->
+  <!-- ESTATÍSTICAS -->
+  <!-- ===================================================== -->
 
-            <p class="text-secondary">
-                Visão geral do sistema de segurança.
-            </p>
+  <div class="row g-4">
+    <!-- Registros -->
+    <div class="col-md-3">
+      <a href="{{ url_for('toxinas.index') }}" class="text-decoration-none">
+        <div class="stat-card">
+          <i class="bi bi-database-lock"></i>
 
+          <div>
+            <small>Registros</small>
+            <h3>{{ total_registros }}</h3>
+          </div>
         </div>
-
+      </a>
     </div>
 
+    <!-- Usuários -->
+    <div class="col-md-3">
+      <a href="{{ url_for('usuarios.index') }}" class="text-decoration-none">
+        <div class="stat-card">
+          <i class="bi bi-people"></i>
 
-    <div class="row g-4">
-
-        <div class="col-md-3">
-
-            <div class="stat-card">
-            <a
-                 href="{{ url_for('toxinas.index') }}"
-                class="text-decoration-none"
-            >
-
-                <i class="bi bi-database-lock"></i>
-
-                <div>
-
-                    <small>Registros</small>
-
-                    <h3>{{ total_registros }}</h3>
-
-                </div>
-
-            </div>
-
+          <div>
+            <small>Usuários</small>
+            <h3>{{ total_usuarios }}</h3>
+          </div>
         </div>
-</a>
-
-        <div class="col-md-3">
-
-            <div class="stat-card">
-
-                <i class="bi bi-people"></i>
-
-                <div>
-
-                    <small>Usuários</small>
-
-                    <h3>{{ total_usuarios }}</h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <div class="stat-card">
-
-                <i class="bi bi-shield-check"></i>
-
-                <div>
-
-                    <small>Acessos permitidos</small>
-
-                    <h3>{{ acessos_permitidos }}</h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <div class="stat-card">
-
-                <i class="bi bi-shield-x"></i>
-
-                <div>
-
-                    <small>Acessos negados</small>
-
-                    <h3>{{ acessos_negados }}</h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </a>
     </div>
 
+    <!-- Acessos permitidos -->
+    <div class="col-md-3">
+      <div class="stat-card">
+        <i class="bi bi-shield-check"></i>
 
-    <div class="row mt-4">
-
-        <div class="col-lg-8">
-
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <h5>
-                        Atividade recente
-                    </h5>
-
-                    <a href="/logs"
-                       class="btn btn-sm btn-outline-secondary">
-
-                        Ver tudo
-
-                    </a>
-
-                </div>
-
-                <div class="table-responsive">
-
-                    <table class="table align-middle">
-
-                        <thead>
-
-                            <tr>
-                                <th>Usuário</th>
-                                <th>Ação</th>
-                                <th>Resultado</th>
-                                <th>Data</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                        {% for log in logs %}
-
-                            <tr>
-
-                                <td>
-                                    {{ log.usuario }}
-                                </td>
-
-                                <td>
-                                    {{ log.acao }}
-                                </td>
-
-                                <td>
-
-                                    {% if log.resultado == 'PERMITIDO' %}
-
-                                    <span class="badge bg-success">
-                                        PERMITIDO
-                                    </span>
-
-                                    {% else %}
-
-                                    <span class="badge bg-danger">
-                                        NEGADO
-                                    </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td>
-                                    {{ log.data_hora }}
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
+        <div>
+          <small>Acessos permitidos</small>
+          <h3>{{ acessos_permitidos }}</h3>
         </div>
-
-
-        <div class="col-lg-4">
-
-            <div class="panel">
-
-                <h5>Nível de acesso</h5>
-
-                <hr>
-
-                <div class="access-level minister">
-
-                    <i class="bi bi-shield-fill-check"></i>
-
-                    <div>
-
-                        <strong>MINISTRO</strong>
-
-                        <small>
-                            Acesso total
-                        </small>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
 
+    <!-- Acessos negados -->
+    <div class="col-md-3">
+      <div class="stat-card">
+        <i class="bi bi-shield-x"></i>
+
+        <div>
+          <small>Acessos negados</small>
+          <h3>{{ acessos_negados }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- AÇÕES DO MINISTRO -->
+  <!-- ===================================================== -->
+
+  <div class="row mt-4 g-4">
+    <!-- Gerenciamento de usuários -->
+    <div class="col-lg-6">
+      <div class="panel h-100">
+        <div class="panel-header">
+          <h5>
+            <i class="bi bi-person-gear me-2"></i>
+            Gerenciamento de usuários
+          </h5>
+        </div>
+
+        <p class="text-secondary">
+          O Ministro possui permissão para gerenciar todos os usuários do
+          sistema.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('usuarios.criar') }}" class="btn btn-security">
+            <i class="bi bi-person-plus-fill me-2"></i>
+            Cadastrar usuário
+          </a>
+
+          <a
+            href="{{ url_for('usuarios.index') }}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-people-fill me-2"></i>
+            Gerenciar usuários
+          </a>
+        </div>
+
+        <hr />
+
+        <div class="small text-secondary">
+          <div class="mb-2">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Pode cadastrar <strong>DIRETORES</strong>
+          </div>
+
+          <div>
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Pode cadastrar <strong>FUNCIONÁRIOS</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segurança / registros -->
+    <div class="col-lg-6">
+      <div class="panel h-100">
+        <div class="panel-header">
+          <h5>
+            <i class="bi bi-shield-lock-fill me-2"></i>
+            Segurança do sistema
+          </h5>
+        </div>
+
+        <p class="text-secondary">
+          Acesso aos registros e histórico de segurança do sistema.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('toxinas.index') }}" class="btn btn-security">
+            <i class="bi bi-database-lock me-2"></i>
+            Registros do cofre
+          </a>
+
+          <a
+            href="{{ url_for('logs.index') }}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-journal-text me-2"></i>
+            Logs de acesso
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- ATIVIDADE RECENTE + NÍVEL DE ACESSO -->
+  <!-- ===================================================== -->
+
+  <div class="row mt-4">
+    <!-- Atividade recente -->
+    <div class="col-lg-8">
+      <div class="panel">
+        <div class="panel-header">
+          <h5>Atividade recente</h5>
+
+          <a
+            href="{{ url_for('logs.index') }}"
+            class="btn btn-sm btn-outline-secondary"
+          >
+            Ver tudo
+          </a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Resultado</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for log in logs %}
+
+              <tr>
+                <td>{{ log.usuario }}</td>
+
+                <td>{{ log.acao }}</td>
+
+                <td>
+                  {% if log.resultado == 'PERMITIDO' %}
+
+                  <span class="badge bg-success"> PERMITIDO </span>
+
+                  {% else %}
+
+                  <span class="badge bg-danger"> NEGADO </span>
+
+                  {% endif %}
+                </td>
+
+                <td>{{ log.data_hora }}</td>
+              </tr>
+
+              {% else %}
+
+              <tr>
+                <td colspan="4" class="text-center text-secondary">
+                  Nenhuma atividade registrada.
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nível de acesso -->
+    <div class="col-lg-4">
+      <div class="panel">
+        <h5>Nível de acesso</h5>
+
+        <hr />
+
+        <div class="access-level minister">
+          <i class="bi bi-shield-fill-check"></i>
+
+          <div>
+            <strong>MINISTRO</strong>
+
+            <small> Acesso total ao sistema </small>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="small text-secondary">
+          <p class="mb-2">
+            <i class="bi bi-check-lg me-2"></i>
+            Gerenciar usuários
+          </p>
+
+          <p class="mb-2">
+            <i class="bi bi-check-lg me-2"></i>
+            Cadastrar diretores
+          </p>
+
+          <p class="mb-2">
+            <i class="bi bi-check-lg me-2"></i>
+            Cadastrar funcionários
+          </p>
+
+          <p class="mb-2">
+            <i class="bi bi-check-lg me-2"></i>
+            Acessar registros do cofre
+          </p>
+
+          <p class="mb-0">
+            <i class="bi bi-check-lg me-2"></i>
+            Visualizar logs de acesso
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
