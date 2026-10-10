@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 # CONFIGURAÇÕES
 app.config.from_pyfile("config.py")
+app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024
 
 # REGISTRAR BLUEPRINTS
 

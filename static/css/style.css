@@ -442,3 +442,10 @@ body {
     overflow-wrap: anywhere;
     font-size: 15px;
 }
+.foto-perfil {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #dee2e6;
+}

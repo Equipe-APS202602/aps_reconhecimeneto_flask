@@ -9,11 +9,11 @@
     <div>
       <h2>
         <i class="bi bi-speedometer2"></i>
-        Painel do Diretor
+        Painel do Diretor(a)
       </h2>
 
       <p class="text-secondary mb-0">
-        Olá, {{ session.get("usuario_nome", "Diretor") }}. Gerencie funcionários
+        Olá, {{ session.get("usuario_nome", "Diretor(a)") }}. Gerencie funcionários
         e consulte os registros autorizados.
       </p>
     </div>
@@ -163,7 +163,7 @@
       </li>
     </ol>
   </div>
-  ```html
+
   <!-- CONSULTA DE REGISTROS -->
   <div class="panel mt-4">
     <h5>
@@ -187,5 +187,5 @@
       </div>
     </div>
   </div>
-  ``` {% endblock %}
+  {% endblock %}
 </div>

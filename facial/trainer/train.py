@@ -235,63 +235,83 @@ def carregar_dataset():
     )
 
 
-# =========================================================
-# SALVAR MODELO
-# =========================================================
-
-
 def salvar_modelo(modelo):
     """
-    Grava e verifica um arquivo temporário antes de
-    substituir trainer.yml.
+    Salva e valida o modelo temporário antes de substituir
+    trainer.yml. Tenta novamente se o Windows bloquear
+    temporariamente a substituição.
     """
-    os.makedirs(
-        MODEL_DIR,
-        exist_ok=True,
-    )
+    import time
+    import stat
 
-    caminho_temporario = os.path.join(
-        MODEL_DIR,
-        f"trainer.{uuid4().hex}.tmp.yml",
-    )
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+    caminho_temporario = os.path.join(MODEL_DIR, f"trainer.{uuid4().hex}.tmp.yml")
 
     try:
+        # Salva o novo modelo em um arquivo temporário.
         modelo.write(caminho_temporario)
 
         if (
             not os.path.isfile(caminho_temporario)
             or os.path.getsize(caminho_temporario) == 0
         ):
-            raise RuntimeError("O arquivo do modelo não foi gravado corretamente.")
+            raise RuntimeError("O arquivo temporário do modelo está vazio.")
 
-        # Confirma que o arquivo salvo pode ser carregado.
+        # Verifica se o arquivo temporário pode ser carregado.
         verificacao = cv2.face.LBPHFaceRecognizer_create()
         verificacao.read(caminho_temporario)
 
         if verificacao.empty():
-            raise RuntimeError("O modelo salvo está vazio.")
+            raise RuntimeError("O modelo temporário não pôde ser validado.")
 
         labels_esperados = np.asarray(modelo.getLabels()).reshape(-1)
 
         labels_salvos = np.asarray(verificacao.getLabels()).reshape(-1)
 
-        if not np.array_equal(
-            labels_esperados,
-            labels_salvos,
-        ):
+        if not np.array_equal(labels_esperados, labels_salvos):
             raise RuntimeError(
                 "Os IDs do modelo salvo não correspondem " "aos IDs do treinamento."
             )
 
-        # Substitui o arquivo somente após a verificação.
-        os.replace(
-            caminho_temporario,
-            MODEL_PATH,
-        )
+        # Se o arquivo existente estiver marcado como somente leitura,
+        # tenta liberar a escrita sem removê-lo.
+        if os.path.exists(MODEL_PATH):
+            os.chmod(MODEL_PATH, stat.S_IWRITE)
+
+        # Tenta substituir o modelo algumas vezes caso o Windows
+        # esteja verificando ou liberando o arquivo temporariamente.
+        ultimo_erro = None
+
+        for tentativa in range(5):
+            try:
+                os.replace(caminho_temporario, MODEL_PATH)
+                ultimo_erro = None
+                break
+
+            except PermissionError as erro:
+                ultimo_erro = erro
+                time.sleep(1)
+
+        if ultimo_erro is not None:
+            raise PermissionError(
+                "O Windows não permitiu substituir trainer.yml. "
+                "Feche outras instâncias do Flask e programas que "
+                "possam estar usando o modelo e tente novamente."
+            ) from ultimo_erro
+
+        print(f"Modelo salvo com sucesso em:\n{MODEL_PATH}")
 
     finally:
+        # Limpa apenas o temporário; nunca apaga trainer.yml aqui.
         if os.path.exists(caminho_temporario):
-            os.remove(caminho_temporario)
+            try:
+                os.remove(caminho_temporario)
+            except OSError:
+                print(
+                    "Aviso: não foi possível remover o arquivo "
+                    f"temporário: {caminho_temporario}"
+                )
 
 
 # =========================================================
@@ -439,7 +459,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        treinar_modelo()
     except (
         OSError,
         RuntimeError,

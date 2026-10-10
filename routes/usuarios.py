@@ -1,5 +1,8 @@
 # routes/usuarios.py
-
+from flask import current_app
+from werkzeug.utils import secure_filename
+import os
+from uuid import uuid4
 from flask import (
     Blueprint,
     jsonify,
@@ -11,15 +14,113 @@ from flask import (
     session,
 )
 
-from auth.permissions import permission_required , login_required
+from auth.permissions import permission_required, login_required
 
 from database.connection import get_connection
 import bcrypt
 
-import os
 import base64
 
 usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/usuarios")
+
+
+@usuarios_bp.route("/perfil/foto", methods=["POST"])
+@login_required
+def atualizar_foto():
+
+    usuario_id = session.get("usuario_id")
+    arquivo = request.files.get("foto")
+
+    if not arquivo or not arquivo.filename:
+        flash("Selecione uma imagem.", "warning")
+        return redirect(url_for("usuarios.perfil"))
+
+    extensoes_permitidas = {".jpg", ".jpeg", ".png", ".webp"}
+    extensao = os.path.splitext(arquivo.filename)[1].lower()
+
+    if extensao not in extensoes_permitidas:
+        flash("Envie uma imagem JPG, PNG ou WEBP.", "warning")
+        return redirect(url_for("usuarios.perfil"))
+
+    # Limita o tamanho do arquivo a 3 MB.
+    arquivo.stream.seek(0, os.SEEK_END)
+    tamanho = arquivo.stream.tell()
+    arquivo.stream.seek(0)
+
+    if tamanho > 3 * 1024 * 1024:
+        flash("A imagem deve ter no máximo 3 MB.", "warning")
+        return redirect(url_for("usuarios.perfil"))
+
+    # Gera um nome único para evitar colisões e nomes perigosos.
+    nome_arquivo = f"{usuario_id}_{uuid4().hex}{extensao}"
+
+    pasta = os.path.join(current_app.root_path, "static", "uploads", "fotos_perfil")
+    os.makedirs(pasta, exist_ok=True)
+
+    caminho = os.path.join(pasta, nome_arquivo)
+    caminho_relativo = f"uploads/fotos_perfil/{nome_arquivo}"
+
+    conexao = get_connection()
+    cursor = conexao.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT foto_perfil FROM usuarios WHERE id = %s", (usuario_id,))
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            flash("Usuário não encontrado.", "danger")
+            return redirect(url_for("usuarios.perfil"))
+
+        arquivo.save(caminho)
+
+        cursor.execute(
+            """
+            UPDATE usuarios
+            SET foto_perfil = %s
+            WHERE id = %s
+        """,
+            (caminho_relativo, usuario_id),
+        )
+
+        conexao.commit()
+
+        # Remove a foto anterior somente após o commit.
+        foto_antiga = usuario.get("foto_perfil")
+        if foto_antiga:
+            caminho_antigo = os.path.abspath(
+                os.path.join(current_app.root_path, "static", foto_antiga)
+            )
+            pasta_fotos = os.path.abspath(pasta)
+
+            if os.path.dirname(caminho_antigo) == pasta_fotos and os.path.isfile(
+                caminho_antigo
+            ):
+                try:
+                    os.remove(caminho_antigo)
+                except OSError:
+                    current_app.logger.warning(
+                        "Não foi possível remover a foto antiga."
+                    )
+
+        flash("Foto de perfil atualizada com sucesso.", "success")
+
+    except Exception:
+        conexao.rollback()
+
+        if os.path.isfile(caminho):
+            try:
+                os.remove(caminho)
+            except OSError:
+                pass
+
+        current_app.logger.exception("Erro ao atualizar foto de perfil.")
+        flash("Não foi possível atualizar a foto.", "danger")
+
+    finally:
+        cursor.close()
+        conexao.close()
+
+    return redirect(url_for("usuarios.perfil"))
 
 
 # =========================================================
@@ -63,56 +164,49 @@ def index():
 # # =========================================================
 # CRIAR USUÁRIO
 # =========================================================
-# =========================================================
-# CRIAR USUÁRIO
-# =========================================================
 
 
 @usuarios_bp.route("/criar", methods=["GET", "POST"])
 @permission_required("GERENCIAR_USUARIOS")
 def criar():
 
-    # Cargo do usuário que está logado
-    cargo_usuario = session.get("usuario_cargo")
+    # Usuário autenticado que está realizando o cadastro
+    usuario_logado_id = session.get("usuario_id")
+    cargo_usuario = session.get("usuario_cargo", "").upper()
 
-    # Define quais cargos ele pode cadastrar
+    # Define quais cargos podem ser cadastrados
     if cargo_usuario == "MINISTRO":
         cargos_disponiveis = ["DIRETOR", "FUNCIONARIO"]
-
     elif cargo_usuario == "DIRETOR":
         cargos_disponiveis = ["FUNCIONARIO"]
-
     else:
         cargos_disponiveis = []
 
-    # =====================================================
-    # GET → abre a tela
-    # =====================================================
-
+    # GET: abre a tela de cadastro
     if request.method == "GET":
         return render_template(
             "usuarios/criar.html", cargos_disponiveis=cargos_disponiveis
         )
 
-    # =====================================================
-    # POST → recebe os dados
-    # =====================================================
+    # POST: recebe os dados do formulário
+    nome = request.form.get("nome", "").strip()
+    email = request.form.get("email", "").strip()
+    cargo = request.form.get("cargo", "").upper()
+    senha = request.form.get("senha", "")
 
-    nome = request.form.get("nome")
-    email = request.form.get("email")
-    cargo = request.form.get("cargo")
-    senha = request.form.get("senha")
-
-    # Verifica campos obrigatórios
+    # Validação dos campos
     if not nome or not email or not cargo or not senha:
         flash("Preencha todos os campos obrigatórios.", "warning")
         return redirect(url_for("usuarios.criar"))
 
-    # Impede que alguém envie manualmente um cargo
-    # que não tem permissão para cadastrar
+    # Validação de permissão
     if cargo not in cargos_disponiveis:
         flash("Você não tem permissão para cadastrar este cargo.", "danger")
         return redirect(url_for("usuarios.criar"))
+
+    if not usuario_logado_id:
+        flash("Sessão inválida. Faça login novamente.", "warning")
+        return redirect(url_for("login.index"))
 
     # Gera o hash da senha
     senha_hash = bcrypt.hashpw(senha.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -123,16 +217,16 @@ def criar():
     try:
         cursor.execute(
             """
-            INSERT INTO usuarios
-            (
+            INSERT INTO usuarios (
                 nome,
                 email,
                 cargo,
-                senha_hash
+                senha_hash,
+                cadastrado_por
             )
-            VALUES (%s, %s, %s, %s)
-            """,
-            (nome, email, cargo, senha_hash),
+            VALUES (%s, %s, %s, %s, %s)
+        """,
+            (nome, email, cargo, senha_hash, usuario_logado_id),
         )
 
         # ID gerado pelo MySQL
@@ -144,18 +238,18 @@ def criar():
             UPDATE usuarios
             SET face_id = %s
             WHERE id = %s
-            """,
+        """,
             (usuario_id, usuario_id),
         )
 
         conexao.commit()
 
-        flash("Usuário cadastrado com sucesso.", "success")
+        flash("Usuário cadastrado. Agora realize o cadastro facial.", "success")
 
     except Exception as erro:
         conexao.rollback()
-
         flash(f"Erro ao cadastrar usuário: {erro}", "danger")
+        return redirect(url_for("usuarios.criar"))
 
     finally:
         cursor.close()
@@ -417,7 +511,8 @@ def perfil():
                 cargo,
                 face_id,
                 ativo,
-                criado_em
+                criado_em,
+                foto_perfil
             FROM usuarios
             WHERE id = %s
         """,

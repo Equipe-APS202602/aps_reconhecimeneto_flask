@@ -202,8 +202,8 @@ def capturar_rosto(face_id):
 
     if contador >= NUMERO_IMAGENS:
 
-    print("CAPTURA CONCLUÍDA COM SUCESSO!")
-    print(f"Foram capturadas {contador} imagens.")
+        print("CAPTURA CONCLUÍDA COM SUCESSO!")
+        print(f"Foram capturadas {contador} imagens.")
 
     # =============================================
     # TREINAMENTO AUTOMÁTICO
@@ -227,3 +227,12 @@ def capturar_rosto(face_id):
         )
 
         sucesso = False
+        
+if __name__ == "__main__":
+    face_id = input("Digite o ID facial (número inteiro maior que zero): ")
+
+    try:
+        face_id = int(face_id)
+        capturar_rosto(face_id)
+    except ValueError:
+        print("ID inválido. Certifique-se de digitar um número inteiro maior que zero.")

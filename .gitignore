@@ -13,3 +13,10 @@ database/config.json
 facial/dataset/3
 facial/dataset/4
 facial/dataset/2
+
+
+# ==============================
+# Fotos de perfil dos usuários
+# ==============================
+static/uploads/fotos_perfil/*
+!static/uploads/fotos_perfil/.gitkeep

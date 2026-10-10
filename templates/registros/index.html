@@ -1,148 +1,171 @@
-{% extends "base.html" %}
-
-{% block title %}
-Registros | Cofre Digital
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %} Registros | Cofre Digital {%
+endblock %} {% block content %}
 
 <div class="container-fluid dashboard">
+  <!-- Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2>
+        <i class="bi bi-database-lock"></i>
+        Registros do Cofre
+      </h2>
 
-    <div class="d-flex
-                justify-content-between
-                align-items-center
-                mb-4">
-
-        <div>
-
-            <h2>
-                <i class="bi bi-database-lock"></i>
-                Registros do Cofre
-            </h2>
-
-            <p class="text-secondary">
-                Registros fictícios para fins acadêmicos.
-            </p>
-
-        </div>
-
+      <p class="text-secondary">Registros fictícios para fins acadêmicos.</p>
     </div>
+  </div>
 
+  <!-- Tabela de registros -->
+  <div class="panel">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Identificação</th>
+            <th>Classificação</th>
+            <th>Nível necessário</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
 
-    <div class="panel">
+        <tbody>
+          {% for registro in registros %}
 
-        <div class="table-responsive">
+          <tr>
+            <td>
+              <code>{{ registro.codigo }}</code>
+            </td>
 
-            <table class="table table-hover align-middle">
+            <td>{{ registro.nome_ficticio }}</td>
 
-                <thead>
+            <td>
+              <span class="badge bg-secondary">
+                {{ registro.classificacao }}
+              </span>
+            </td>
 
-                    <tr>
+            <td>
+              {% if registro.nivel_acesso == 'MINISTRO' %}
 
-                        <th>Código</th>
+              <span class="badge bg-danger"> MINISTRO </span>
 
-                        <th>Identificação</th>
+              {% elif registro.nivel_acesso == 'DIRETOR' %}
 
-                        <th>Classificação</th>
+              <span class="badge bg-warning text-dark"> DIRETOR(A) </span>
 
-                        <th>Nível necessário</th>
+              {% else %}
 
-                        <th>Status</th>
+              <span class="badge bg-success"> FUNCIONÁRIO </span>
 
-                        <th>Ação</th>
+              {% endif %}
+            </td>
 
-                    </tr>
+            <td>
+              <span class="badge bg-success">
+                <i class="bi bi-check-circle"></i>
+                CONTROLADO
+              </span>
+            </td>
 
-                </thead>
+            <td>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalToxina{{ registro.id }}"
+              >
+                <i class="bi bi-eye"></i>
+                Visualizar
+              </button>
+            </td>
+          </tr>
 
-
-                <tbody>
-
-                {% for registro in registros %}
-
-                    <tr>
-
-                        <td>
-                            <code>
-                                {{ registro.codigo }}
-                            </code>
-                        </td>
-
-                        <td>
-                            {{ registro.nome_ficticio }}
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-secondary">
-
-                                {{ registro.classificacao }}
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            {% if registro.nivel_acesso == 'MINISTRO' %}
-
-                            <span class="badge bg-danger">
-                                MINISTRO
-                            </span>
-
-                            {% elif registro.nivel_acesso == 'DIRETOR' %}
-
-                            <span class="badge bg-warning text-dark">
-                                DIRETOR
-                            </span>
-
-                            {% else %}
-
-                            <span class="badge bg-success">
-                                FUNCIONÁRIO
-                            </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-success">
-
-                                <i class="bi bi-check-circle"></i>
-
-                                CONTROLADO
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            <a href="#"
-                               class="btn btn-sm btn-outline-primary">
-
-                                <i class="bi bi-eye"></i>
-
-                                Visualizar
-
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
+  </div>
 </div>
 
-{% endblock %}
+<!-- Modais dos registros -->
+{% for registro in registros %}
+
+<div
+  class="modal fade"
+  id="modalToxina{{ registro.id }}"
+  tabindex="-1"
+  aria-labelledby="tituloToxina{{ registro.id }}"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Cabeçalho do modal -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloToxina{{ registro.id }}">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          Detalhes da substância
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Fechar"
+        ></button>
+      </div>
+
+      <!-- Conteúdo do modal -->
+      <div class="modal-body">
+        <h5 class="mb-3">{{ registro.nome_ficticio }}</h5>
+
+        <p>
+          <strong>Código:</strong>
+          <code>{{ registro.codigo }}</code>
+        </p>
+
+        <p>
+          <strong>Classificação:</strong>
+
+          <span class="badge bg-secondary"> {{ registro.classificacao }} </span>
+        </p>
+
+        <p>
+          <strong>Nível de acesso necessário:</strong>
+          {{ registro.nivel_acesso }}
+        </p>
+
+        <p>
+          <strong>Quantidade simulada:</strong>
+          {{ registro.quantidade_simulada }}
+        </p>
+
+        <hr />
+
+        <h6>
+          <i class="bi bi-info-circle me-1"></i>
+          Descrição da substância
+        </h6>
+
+        <p class="text-secondary" style="white-space: pre-line">
+          {{ registro.descricao or 'Nenhuma descrição cadastrada.' }}
+        </p>
+
+        <div class="alert alert-info mb-0">
+          <i class="bi bi-shield-lock me-1"></i>
+          Registro fictício destinado exclusivamente a fins acadêmicos.
+        </div>
+      </div>
+
+      <!-- Rodapé do modal -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i>
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %} {% endblock %}
