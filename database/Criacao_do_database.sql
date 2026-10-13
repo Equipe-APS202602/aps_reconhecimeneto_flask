@@ -45,7 +45,9 @@ CREATE TABLE usuarios (
 -- 2. USUÁRIOS INICIAIS
 -- =====================================================
 
+
 INSERT INTO usuarios
+(nome, email, cargo, face_id, senha_hash, ativo)
 (nome, email, cargo, face_id, ativo)
 VALUES
 (
@@ -53,6 +55,8 @@ VALUES
     'ministro@ambiente.gov.br',
     'MINISTRO',
     1,
+    'scrypt:32768:8:1$MG2d16gGYoWtKHHT$bc24745e8f3731c94a8fd19b377b19a1a54afd5e146b8779d1fd79e07863600d7e0786b00a407b83174da2e8c1b3936927889a85282a67d70fa71f9d7a7cc65c',
+    1
     TRUE
 ),
 (
@@ -60,6 +64,8 @@ VALUES
     'diretor@ambiente.gov.br',
     'DIRETOR',
     2,
+    'scrypt:32768:8:1$l3Pi4xWB73oLCFiD$4d58a449270fdc6925c23c80c00868654461d23bf8c821b62732126f42d524f64fb2ce0c43c7a7c9a67a6cebcf4c089a33051a8f0ae337a5ce9ccb96a4532014',
+    1
     TRUE
 ),
 (
@@ -67,6 +73,8 @@ VALUES
     'funcionario@ambiente.gov.br',
     'FUNCIONARIO',
     3,
+    'scrypt:32768:8:1$tjxoHpPwxngUYfCK$3ccb3e05023389b5ef60a32f41589e10225ab50ed1bf41d0e57b6918195ef49f73526a3772cd5e539ce35344faea696c0f7c38b22d202fa89814b2d819576be2',
+    1
     TRUE
 );
 
