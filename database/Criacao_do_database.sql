@@ -45,10 +45,8 @@ CREATE TABLE usuarios (
 -- 2. USUÁRIOS INICIAIS
 -- =====================================================
 
-
 INSERT INTO usuarios
 (nome, email, cargo, face_id, senha_hash, ativo)
-(nome, email, cargo, face_id, ativo)
 VALUES
 (
     'Ministro do Meio Ambiente',
