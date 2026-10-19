@@ -359,6 +359,32 @@ Verifique as permissões da câmera no sistema operacional e no navegador. Em de
 
 Confira o cargo armazenado no banco, o valor colocado na sessão após o login e a seleção do template em `routes/dashboard.py`.
 
+## 🔍 Diagnóstico do ambiente OpenCV
+
+Para verificar se o ambiente Python possui os componentes necessários para o reconhecimento facial, execute o comando abaixo na raiz do projeto:
+
+```bash
+python -c "import cv2, os; print('OpenCV:', cv2.__version__); print('cv2.face disponível:', hasattr(cv2, 'face')); print('Diretório Haar Cascade:', cv2.data.haarcascades); print('Arquivo XML encontrado:', os.path.exists(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'))"
+```
+
+**Como interpretar os resultados:**
+
+- **OpenCV:** exibe a versão instalada.
+- **`cv2.face disponível`:** deve retornar `True` quando o projeto utiliza o reconhecedor LBPH.
+- **Diretório Haar Cascade:** exibe o caminho padrão dos classificadores faciais do OpenCV.
+- **Arquivo XML encontrado:** deve retornar `True` quando o classificador esperado está presente nesse diretório.
+
+**Caso algum componente não seja encontrado:**
+
+1. Verifique se o ambiente virtual está ativado.
+2. Confira se as dependências foram instaladas corretamente.
+3. Verifique se o pacote OpenCV utilizado disponibiliza o módulo `cv2.face`.
+4. Confira se o arquivo `haarcascade_frontalface_default.xml` existe no caminho utilizado pelo código.
+5. Confirme se o modelo treinado `facial/models/trainer.yml` foi gerado antes de testar o reconhecimento facial.
+
+Os caminhos e arquivos necessários podem variar conforme a implementação do projeto.
+
+
 ## 🎓 Objetivo acadêmico
 
 O projeto integra conceitos de visão computacional, autenticação, autorização, desenvolvimento web e bancos de dados. Sua finalidade é demonstrar como diferentes componentes de software podem trabalhar juntos para organizar e restringir o acesso a informações de acordo com o perfil de cada usuário.
