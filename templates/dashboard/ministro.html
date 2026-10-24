@@ -24,15 +24,8 @@
   <div class="row g-4">
     <!-- Registros -->
     <div class="col-md-3">
-      <a href="{{ url_for('toxinas.index') }}" class="text-decoration-none">
-        <div class="stat-card">
-          <i class="bi bi-database-lock"></i>
-
-          <div>
-            <small>Registros</small>
-            <h3>{{ total_registros }}</h3>
-          </div>
-        </div>
+      <a href="{{ url_for('toxinas.index') }}" class="text-decoration-none text-body">
+        {% include "dashboard/_registro_disponiveis.html" %}
       </a>
     </div>
 

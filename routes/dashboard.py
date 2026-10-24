@@ -80,6 +80,14 @@ def dashboard():
 
         registros_disponiveis = cursor.fetchone()["total"]
 
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM registros_cofre
+            WHERE nivel_acesso = 'FUNCIONARIO'
+        """)
+
+        registros_funcionario_disponiveis = cursor.fetchone()["total"]
+
         # =================================================
         # ACESSOS REALIZADOS HOJE
         # =================================================
@@ -130,6 +138,7 @@ def dashboard():
             "acessos_permitidos": acessos_permitidos,
             "acessos_negados": acessos_negados,
             "registros_disponiveis": registros_disponiveis,
+            "registros_funcionario_disponiveis": registros_funcionario_disponiveis,
             "acessos_hoje": acessos_hoje,
             "ultimo_acesso": ultimo_acesso,
         }
