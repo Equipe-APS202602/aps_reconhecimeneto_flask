@@ -27,7 +27,9 @@
   <!-- INDICADORES -->
   <div class="row g-4">
     <div class="col-md-4">
-      {% include "dashboard/_registro_disponiveis.html" %}
+      {% with registros_visiveis=registros_disponiveis %}
+        {% include "dashboard/_registro_disponiveis.html" %}
+      {% endwith %}
     </div>
 
     <div class="col-md-4">

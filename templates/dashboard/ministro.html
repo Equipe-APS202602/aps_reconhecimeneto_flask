@@ -25,7 +25,9 @@
     <!-- Registros -->
     <div class="col-md-3">
       <a href="{{ url_for('toxinas.index') }}" class="text-decoration-none text-body">
-        {% include "dashboard/_registro_disponiveis.html" %}
+        {% with registros_visiveis=registros_ministro_disponiveis %}
+          {% include "dashboard/_registro_disponiveis.html" %}
+        {% endwith %}
       </a>
     </div>
 
