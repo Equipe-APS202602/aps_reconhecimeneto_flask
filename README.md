@@ -3,6 +3,18 @@
 Sistema web acadêmico desenvolvido para as Atividades Práticas Supervisionadas (APS) do curso de Ciência da Computação. O **Cofre Digital** simula um ambiente de controle de acesso a registros fictícios de substâncias, utilizando reconhecimento facial, autenticação de usuários, permissões por cargo e registro de atividades.
 
 > **Projeto acadêmico:** desenvolvido pela equipe APS 2026/02 para fins educacionais. As substâncias, os registros e os cenários apresentados são fictícios.
+ ## 👥 Integrantes
+
+| Nome             | RA      |
+| ---------------- | ------- |
+| Ariane Veras     | R197123 |
+| Eduardo Theodoro | R153FJ3 |
+| Sydhiney Silva   | G75EJI5 |
+| Victor Donadi    | G593IC1 |
+
+
+---
+**Curso:** Ciência da Computação — 2026
 
 ## 📌 Sobre o projeto
 
